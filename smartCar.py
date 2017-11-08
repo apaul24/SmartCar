@@ -3,70 +3,71 @@ from datetime import date, datetime
 import time, sys, obd, os, mysql.connector
 import plotly as py
 from plotly.graph_objs import *
+import smartCarFunctions as smartCar
+from ConfigParser import SafeConfigParser
 
-######## Functions ########
+#Open .config file to read in credentials for MySQL and Plotly
+parser = SafeConfigParser()
+parser.read('smartCar.config')
 
-#Update rpm_table
-def new_rpm(r):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_rpm = ("INSERT INTO rpm_table (rpm, time_stamp) VALUES (%s, %s)")
-    data_rpm = (r.value.magnitude, now)
-    cursor.execute(add_rpm, data_rpm)
-    cnx.commit()
-    time.sleep(0.5)
+#Plotly credentials
+plotlyUser = parser.get('Plotly', 'username')
+apiKey = parser.get('Plotly', 'api_key')
 
-#Update fuel_level_table
-def new_fuel(f):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_fuel_level = ("INSERT INTO fuel_level_table (fuel_level, time_stamp) VALUES (%s, %s)")
-    data_fuel_level = (round(f.value.magnitude, 2), now)
-    cursor.execute(add_fuel_level, data_fuel_level)
-    cnx.commit()
-    time.sleep(0.5)
-
-#Query data from MySQL database
-def readRPMData():
-    query = ("SELECT rpm, time_stamp FROM rpm_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    rpm_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (rpm, time_stamp) in cursor:
-        rpm_data.append(rpm)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=rpm_data)
-    data = Data([trace])
-    return data
-        
-#Plot graphs online
-def plotRPMData(data):
-    py.plotly.plot(data, filename = 'RPM vs. Time')
-
-#Set credentials for plotly in order to plot online
-def plotlyLogin(userName, apiKey):    
-    py.tools.set_credentials_file(username=userName, api_key=apiKey)
+#MySQL credentials
+mysqlUser = parser.get('MySQL', 'username')
+mysqlPassword = parser.get('MySQL', 'password')
+mysqlHost = parser.get('MySQL', 'host')
+mysqlDatabase = parser.get('MySQL', 'database')
     
-#Connect to MySQL database and return cnx (localhost is default host)
-def mysqlConnect(userName, password, database, host='localhost'):
-try:
-    cnx = mysql.connector.connect(user=username, password=password, host=host, database=database)
+#Set credentials for plotly in order to plot online
+smartCar.plotlyLogin(plotlyUser, apiKey)
+    
+#Connect to MySQL database
+cnx = smartCar.mysqlConnect(mysqlUser, mysqlPassword, mysqlDatabase, mysqlHost)
+cursor = cnx.cursor()
 
-except mysql.connector.Error as err:
-    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        print("Something is wrong with your user name and password.")
-        sys.exit()
-    elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        print("Database does not exist.")
-        sys.exit()
-    else:
-        print(err)
-        sys.exit()
-else:       
-    return cnx
+#Auto connect to OBD scanner
+connection = obd.Async()
 
+#Check if connected to OBD scanner
+if connection.is_connected():
+    print("Car Connected!")
+    print("Protocol: {}".format(connection.protocol_name()))
+    print("Now monitoring...\n")
 
+    #Choose parameters to monitor
+    connection.watch(obd.commands.RPM, callback=new_rpm)
+    connection.watch(obd.commands.FUEL_LEVEL, callback=new_fuel)
+
+    #Start monitoring
+    connection.start()
+
+    #Keep monitoring until user enters CTRL+C
+    try:
+        while 1:
+            pass
+    except KeyboardInterrupt:
+        #Stop monitoring and close connection to OBD scanner
+        print ("Closing connection to OBD scanner...")
+        connection.stop()
+        connection.unwatch_all()
+        connection.close()
+        print ("Connection closed successfully!")
+        print ("Now plotting data...")
+
+        #Plot data read from MySQL database and close connection
+        smartCar.plotRPMData(smartCar.readRPMData(cursor))
+        print ("Data plotted online successfully!")
+        cursor.close()
+        cnx.close()
+    
+        #Prompt user to shut down system
+        print ("System is OK to shutdown.")
+
+else:
+    print("Unable to connect with car.")
+
+    #Close connection with MySQL
+    cursor.close()
+    cnx.close()
