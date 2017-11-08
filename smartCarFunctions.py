@@ -53,20 +53,20 @@ def plotlyLogin(userName, apiKey):
     
 #Connect to MySQL database and return cnx (localhost is default host)
 def mysqlConnect(userName, password, database, host='localhost'):
-try:
-    cnx = mysql.connector.connect(user=username, password=password, host=host, database=database)
+    try:
+        cnx = mysql.connector.connect(user=userName, password=password, host=host, database=database)
 
-except mysql.connector.Error as err:
-    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        print("Something is wrong with your user name and password.")
-        sys.exit()
-    elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        print("Database does not exist.")
-        sys.exit()
-    else:
-        print(err)
-        sys.exit()
-else:       
-    return cnx
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name and password.")
+            sys.exit()
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist.")
+            sys.exit()
+        else:
+            print(err)
+            sys.exit()
+    else:       
+        return cnx
 
 

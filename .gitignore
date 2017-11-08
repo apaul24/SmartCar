@@ -1,2 +1,5 @@
 #Config file
 *.config
+
+#Compiled python code
+*.pyc
