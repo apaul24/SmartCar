@@ -38,7 +38,11 @@ if connection.is_connected():
 
     #Choose parameters to monitor
     connection.watch(obd.commands.RPM, callback=new_rpm)
-    connection.watch(obd.commands.FUEL_LEVEL, callback=new_fuel)
+    connection.watch(obd.commands.FUEL_LEVEL, callback=new_fuel_level)
+    connection.watch(obd.commands.ENGINE_LOAD, callback=new_engine_load)
+    connection.watch(obd.commands.SPEED, callback=new_speed)
+    connection.watch(obd.commands.OIL_TEMP, callback=new_oil_temp)
+    connection.watch(obd.commands.FUEL_RATE, callback=new_fuel_rate)
 
     #Start monitoring
     connection.start()
@@ -54,10 +58,15 @@ if connection.is_connected():
         connection.unwatch_all()
         connection.close()
         print ("Connection closed successfully!")
-        print ("Now plotting data...")
-
+        
         #Plot data read from MySQL database and close connection
-        smartCar.plotRPMData(smartCar.readRPMData(cursor))
+        print ("Now plotting data...")
+        smartCar.plotRPMData(smartCar.readRPMData())
+        smartCar.plotFuelLevelData(smartCar.readFuelLevelData())
+        smartCar.plotEngineLoadData(smartCar.readEngineLoadData())
+        smartCar.plotSpeedData(smartCar.readSpeedData())
+        smartCar.plotOilTempData(smartCar.readOilTempData())
+        smartCar.plotFuelRateData(smartCar.readFuelRateData())
         print ("Data plotted online successfully!")
         cursor.close()
         cnx.close()
