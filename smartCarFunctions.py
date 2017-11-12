@@ -3,6 +3,7 @@ from datetime import date, datetime
 import time, sys, obd, os, mysql.connector
 import plotly as py
 from plotly.graph_objs import *
+import mysqlConfig as ms
 
 ################# Functions ####################
 
@@ -33,37 +34,37 @@ def new_rpm(r):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     add_rpm = ("INSERT INTO rpm_table (rpm, time_stamp) VALUES (%s, %s)")
     data_rpm = (r.value.magnitude, now)
-    cursor.execute(add_rpm, data_rpm)
-    cnx.commit()
-    time.sleep(0.5)
+    ms.cursor.execute(add_rpm, data_rpm)
+    ms.cnx.commit()
+    time.sleep(0.25)
 
 #Update fuel_level_table
 def new_fuel_level(fl):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     add_fuel_level = ("INSERT INTO fuel_level_table (fuel_level, time_stamp) VALUES (%s, %s)")
     data_fuel_level = (round(fl.value.magnitude, 2), now)
-    cursor.execute(add_fuel_level, data_fuel_level)
-    cnx.commit()
-    time.sleep(0.5)
+    ms.cursor.execute(add_fuel_level, data_fuel_level)
+    ms.cnx.commit()
+    time.sleep(0.25)
 
 #Update engine_load_table
 def new_engine_load(e):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     add_engine_load = ("INSERT INTO engine_load_table (engine_load, time_stamp) VALUES (%s, %s)")
     data_engine_load = (round(e.value.magnitude, 2), now)
-    cursor.execute(add_engine_load, data_engine_load)
-    cnx.commit()
-    time.sleep(0.5)
+    ms.cursor.execute(add_engine_load, data_engine_load)
+    ms.cnx.commit()
+    time.sleep(0.25)
 
 #Update speed_table
 def new_speed(s):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     add_speed = ("INSERT INTO speed_table (speed, time_stamp) VALUES (%s, %s)")
     data_speed = (s.value.magnitude, now)
-    cursor.execute(add_speed, data_speed)
-    cnx.commit()
-    time.sleep(0.5)
-
+    ms.cursor.execute(add_speed, data_speed)
+    ms.cnx.commit()
+    time.sleep(0.25)
+'''
 #Update oil_temp_table
 def new_oil_temp(o):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -81,9 +82,10 @@ def new_fuel_rate(fr):
     cursor.execute(add_fuel_rate, data_fuel_rate)
     cnx.commit()
     time.sleep(0.5)
+'''
 
 #Query rpm data from MySQL database
-def readRPMData():
+def readRPMData(cursor):
     query = ("SELECT rpm, time_stamp FROM rpm_table")
     cursor.execute(query)
 
@@ -106,7 +108,7 @@ def plotRPMData(data):
     py.plotly.plot(data, filename = 'RPM vs. Time')
 
 #Query fuel level data from MySQL database
-def readFuelLevelData():
+def readFuelLevelData(cursor):
     query = ("SELECT fuel_level, time_stamp FROM fuel_level_table")
     cursor.execute(query)
 
@@ -129,7 +131,7 @@ def plotFuelLevelData(data):
     py.plotly.plot(data, filename = 'Fuel Level vs. Time')
 
 #Query engine load data from MySQL database
-def readEngineLoadData():
+def readEngineLoadData(cursor):
     query = ("SELECT engine_load, time_stamp FROM engine_load_table")
     cursor.execute(query)
 
@@ -152,7 +154,7 @@ def plotEngineLoadData(data):
     py.plotly.plot(data, filename = 'Engine Load vs. Time')
 
 #Query speed data from MySQL database
-def readSpeedData():
+def readSpeedData(cursor):
     query = ("SELECT speed, time_stamp FROM speed_table")
     cursor.execute(query)
 
@@ -175,7 +177,7 @@ def plotSpeedData(data):
     py.plotly.plot(data, filename = 'Speed vs. Time')
 
 #Query oil temp data from MySQL database
-def readOilTempData():
+def readOilTempData(cursor):
     query = ("SELECT oil_temp, time_stamp FROM oil_temp_table")
     cursor.execute(query)
 
@@ -198,7 +200,7 @@ def plotOilTempData(data):
     py.plotly.plot(data, filename = 'Oil Temperature vs. Time')
 
 #Query fuel rate data from MySQL database
-def readFuelRateData():
+def readFuelRateData(cursor):
     query = ("SELECT fuel_rate, time_stamp FROM fuel_rate_table")
     cursor.execute(query)
 

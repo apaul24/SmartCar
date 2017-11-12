@@ -3,6 +3,7 @@ from datetime import date, datetime
 import time, sys, obd, os, mysql.connector
 import plotly as py
 from plotly.graph_objs import *
+import mysqlConfig as ms
 import smartCarFunctions as smartCar
 from ConfigParser import SafeConfigParser
 
@@ -24,8 +25,8 @@ mysqlDatabase = parser.get('MySQL', 'database')
 smartCar.plotlyLogin(plotlyUser, apiKey)
     
 #Connect to MySQL database
-cnx = smartCar.mysqlConnect(mysqlUser, mysqlPassword, mysqlDatabase, mysqlHost)
-cursor = cnx.cursor()
+ms.cnx = smartCar.mysqlConnect(mysqlUser, mysqlPassword, mysqlDatabase, mysqlHost)
+ms.cursor = ms.cnx.cursor()
 
 #Auto connect to OBD scanner
 connection = obd.Async()
@@ -37,12 +38,12 @@ if connection.is_connected():
     print("Now monitoring...\n")
 
     #Choose parameters to monitor
-    connection.watch(obd.commands.RPM, callback=new_rpm)
-    connection.watch(obd.commands.FUEL_LEVEL, callback=new_fuel_level)
-    connection.watch(obd.commands.ENGINE_LOAD, callback=new_engine_load)
-    connection.watch(obd.commands.SPEED, callback=new_speed)
-    connection.watch(obd.commands.OIL_TEMP, callback=new_oil_temp)
-    connection.watch(obd.commands.FUEL_RATE, callback=new_fuel_rate)
+    connection.watch(obd.commands.RPM, callback=smartCar.new_rpm)
+    connection.watch(obd.commands.FUEL_LEVEL, callback=smartCar.new_fuel_level)
+    connection.watch(obd.commands.ENGINE_LOAD, callback=smartCar.new_engine_load)
+    connection.watch(obd.commands.SPEED, callback=smartCar.new_speed)
+    #connection.watch(obd.commands.OIL_TEMP, callback=smartCar.new_oil_temp)
+    #connection.watch(obd.commands.FUEL_RATE, callback=smartCar.new_fuel_rate)
 
     #Start monitoring
     connection.start()
@@ -61,15 +62,15 @@ if connection.is_connected():
         
         #Plot data read from MySQL database and close connection
         print ("Now plotting data...")
-        smartCar.plotRPMData(smartCar.readRPMData())
-        smartCar.plotFuelLevelData(smartCar.readFuelLevelData())
-        smartCar.plotEngineLoadData(smartCar.readEngineLoadData())
-        smartCar.plotSpeedData(smartCar.readSpeedData())
-        smartCar.plotOilTempData(smartCar.readOilTempData())
-        smartCar.plotFuelRateData(smartCar.readFuelRateData())
+        smartCar.plotRPMData(smartCar.readRPMData(ms.cursor))
+        smartCar.plotFuelLevelData(smartCar.readFuelLevelData(ms.cursor))
+        smartCar.plotEngineLoadData(smartCar.readEngineLoadData(ms.cursor))
+        smartCar.plotSpeedData(smartCar.readSpeedData(ms.cursor))
+        #smartCar.plotOilTempData(smartCar.readOilTempData(cursor))
+        #smartCar.plotFuelRateData(smartCar.readFuelRateData(cursor))
         print ("Data plotted online successfully!")
-        cursor.close()
-        cnx.close()
+        ms.cursor.close()
+        ms.cnx.close()
     
         #Prompt user to shut down system
         print ("System is OK to shutdown.")
@@ -78,5 +79,5 @@ else:
     print("Unable to connect with car.")
 
     #Close connection with MySQL
-    cursor.close()
-    cnx.close()
+    ms.cursor.close()
+    ms.cnx.close()
