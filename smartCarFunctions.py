@@ -36,7 +36,7 @@ def new_rpm(r):
     data_rpm = (r.value.magnitude, now)
     ms.cursor.execute(add_rpm, data_rpm)
     ms.cnx.commit()
-    time.sleep(0.25)
+    time.sleep(0.142)
 
 #Update fuel_level_table
 def new_fuel_level(fl):
@@ -45,7 +45,7 @@ def new_fuel_level(fl):
     data_fuel_level = (round(fl.value.magnitude, 2), now)
     ms.cursor.execute(add_fuel_level, data_fuel_level)
     ms.cnx.commit()
-    time.sleep(0.25)
+    time.sleep(0.142)
 
 #Update engine_load_table
 def new_engine_load(e):
@@ -54,7 +54,7 @@ def new_engine_load(e):
     data_engine_load = (round(e.value.magnitude, 2), now)
     ms.cursor.execute(add_engine_load, data_engine_load)
     ms.cnx.commit()
-    time.sleep(0.25)
+    time.sleep(0.142)
 
 #Update speed_table
 def new_speed(s):
@@ -63,26 +63,35 @@ def new_speed(s):
     data_speed = (s.value.magnitude, now)
     ms.cursor.execute(add_speed, data_speed)
     ms.cnx.commit()
-    time.sleep(0.25)
-'''
-#Update oil_temp_table
-def new_oil_temp(o):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_oil_temp = ("INSERT INTO oil_temp_table (oil_temp, time_stamp) VALUES (%s, %s)")
-    data_oil_temp = (round((((o.value.magnitude * 9) / 5) + 32), 2), now) #convert from C to F
-    cursor.execute(add_oil_temp, data_oil_temp)
-    cnx.commit()
-    time.sleep(0.5)
+    time.sleep(0.142)
 
-#Update fuel_rate_table
-def new_fuel_rate(fr):
+#Update air_flow_table
+def new_air_flow(af):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_fuel_rate = ("INSERT INTO fuel_rate_table (fuel_rate, time_stamp) VALUES (%s, %s)")
-    data_fuel_rate = (round((fr.value.magnitude / 3.78541), 2), now) #convert from liter/hour to gallons/hour
-    cursor.execute(add_fuel_rate, data_fuel_rate)
+    add_air_flow = ("INSERT INTO air_flow_table (air_flow, time_stamp) VALUES (%s, %s)")
+    data_air_flow = (round(af.value.magnitude, 2), now)
+    cursor.execute(add_air_flow, data_air_flow)
     cnx.commit()
-    time.sleep(0.5)
-'''
+    time.sleep(0.142)
+
+#Update throttle_position_table
+def new_throttle_position(tp):
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    add_throttle_position = ("INSERT INTO throttle_position_table (throttle_position, time_stamp) VALUES (%s, %s)")
+    data_throttle_position = (round(tp.value.magnitude, 2), now)
+    cursor.execute(add_throttle_position, data_throttle_position)
+    cnx.commit()
+    time.sleep(0.142)
+
+#Update coolant_temp_table
+def new_coolant_temp(ct):
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    add_coolant_temp = ("INSERT INTO coolant_temp_table (coolant_temp, time_stamp) VALUES (%s, %s)")
+    data_coolant_temp = (round(((ct.value.magnitude * 1.8) + 32), 2), now) #convert temp from C to F
+    cursor.execute(add_coolant_temp, data_coolant_temp)
+    cnx.commit()
+    time.sleep(0.142)
+
 
 #Query rpm data from MySQL database
 def readRPMData(cursor):
@@ -176,51 +185,74 @@ def readSpeedData(cursor):
 def plotSpeedData(data):
     py.plotly.plot(data, filename = 'Speed vs. Time')
 
-#Query oil temp data from MySQL database
-def readOilTempData(cursor):
-    query = ("SELECT oil_temp, time_stamp FROM oil_temp_table")
+#Query air flow data from MySQL database
+def readAirFlowData(cursor):
+    query = ("SELECT air_flow, time_stamp FROM air_flow_table")
     cursor.execute(query)
 
     #Initialize empty lists to store data
-    oil_temp_data = []
+    air_flow_data = []
     time_stamp_data = []
 
     #Read data into lists
-    for (oil_temp, time_stamp) in cursor:
-        oil_temp_data.append(oil_temp)
+    for (air_flow, time_stamp) in cursor:
+        air_flow_data.append(air_flow)
         time_stamp_data.append(time_stamp)
         
     #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=oil_temp_data)
+    trace = Scatter(x=time_stamp_data, y=air_flow_data)
     data = Data([trace])
     return data
         
-#Plot oil temp graph online
-def plotOilTempData(data):
-    py.plotly.plot(data, filename = 'Oil Temperature vs. Time')
+#Plot air flow graph online
+def plotAirFlowData(data):
+    py.plotly.plot(data, filename = 'Air Flow Rate vs. Time')
 
-#Query fuel rate data from MySQL database
-def readFuelRateData(cursor):
-    query = ("SELECT fuel_rate, time_stamp FROM fuel_rate_table")
+#Query throttle position data from MySQL database
+def readThrottlePositionData(cursor):
+    query = ("SELECT throttle_position, time_stamp FROM throttle_position_table")
     cursor.execute(query)
 
     #Initialize empty lists to store data
-    fuel_rate_data = []
+    throttle_position_data = []
     time_stamp_data = []
 
     #Read data into lists
-    for (fuel_rate, time_stamp) in cursor:
-        fuel_rate_data.append(fuel_rate)
+    for (throttle_position, time_stamp) in cursor:
+        throttle_position_data.append(throttle_position)
         time_stamp_data.append(time_stamp)
         
     #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=fuel_rate_data)
+    trace = Scatter(x=time_stamp_data, y=throttle_position_data)
     data = Data([trace])
     return data
         
-#Plot fuel rate graph online
-def plotFuelRateData(data):
-    py.plotly.plot(data, filename = 'Fuel Rate vs. Time')
+#Plot throttle position graph online
+def plotThrottlePositionData(data):
+    py.plotly.plot(data, filename = 'Throttle Position vs. Time')
+
+#Query coolant temperature data from MySQL database
+def readCoolantTempData(cursor):
+    query = ("SELECT coolant_temp, time_stamp FROM coolant_temp_table")
+    cursor.execute(query)
+
+    #Initialize empty lists to store data
+    coolant_temp_data = []
+    time_stamp_data = []
+
+    #Read data into lists
+    for (coolant_temp, time_stamp) in cursor:
+        coolant_temp_data.append(coolant_temp)
+        time_stamp_data.append(time_stamp)
+        
+    #Create a trace from the collected data
+    trace = Scatter(x=time_stamp_data, y=coolant_temp_data)
+    data = Data([trace])
+    return data
+        
+#Plot coolant temperature graph online
+def plotCoolantTempData(data):
+    py.plotly.plot(data, filename = 'Engine Coolant Temperature vs. Time')
 
 
 

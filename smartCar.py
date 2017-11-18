@@ -42,8 +42,9 @@ if connection.is_connected():
     connection.watch(obd.commands.FUEL_LEVEL, callback=smartCar.new_fuel_level)
     connection.watch(obd.commands.ENGINE_LOAD, callback=smartCar.new_engine_load)
     connection.watch(obd.commands.SPEED, callback=smartCar.new_speed)
-    #connection.watch(obd.commands.OIL_TEMP, callback=smartCar.new_oil_temp)
-    #connection.watch(obd.commands.FUEL_RATE, callback=smartCar.new_fuel_rate)
+    connection.watch(obd.commands.MAF, callback=smartCar.new_air_flow)
+    connection.watch(obd.commands.THROTTLE_POS, callback=smartCar.new_throttle_position)
+    connection.watch(obd.commands.COOLANT_TEMP, callback=smartCar.new_coolant_temp)
 
     #Start monitoring
     connection.start()
@@ -66,8 +67,9 @@ if connection.is_connected():
         smartCar.plotFuelLevelData(smartCar.readFuelLevelData(ms.cursor))
         smartCar.plotEngineLoadData(smartCar.readEngineLoadData(ms.cursor))
         smartCar.plotSpeedData(smartCar.readSpeedData(ms.cursor))
-        #smartCar.plotOilTempData(smartCar.readOilTempData(cursor))
-        #smartCar.plotFuelRateData(smartCar.readFuelRateData(cursor))
+        smartCar.plotAirFlowData(smartCar.readAirFlowData(ms.cursor))
+        smartCar.plotThrottlePositionData(smartCar.readThrottlePositionData(ms.cursor))
+        smartCar.plotCoolantTempData(smartCar.readCoolantTempData(ms.cursor))
         print ("Data plotted online successfully!")
         ms.cursor.close()
         ms.cnx.close()
