@@ -85,7 +85,7 @@ if connection.is_connected():
         connection.stop()
         print("Fuel level read successfully!")
         
-        #Stop monitoring and close connection to OBD scanner
+        #Stop monitoring fuel level and close connection to OBD scanner
         print ("Closing connection to OBD scanner...")
         connection.unwatch_all()
         connection.close()
