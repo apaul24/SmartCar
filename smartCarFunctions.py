@@ -32,228 +32,167 @@ def mysqlConnect(userName, password, database, host='localhost'):
 #Update rpm_table
 def new_rpm(r):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_rpm = ("INSERT INTO rpm_table (rpm, time_stamp) VALUES (%s, %s)")
-    data_rpm = (r.value.magnitude, now)
+    endOfTrip = False
+    add_rpm = ("INSERT INTO rpm_table (rpm, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_rpm = (r.value.magnitude, now, endOfTrip)
     ms.cursor.execute(add_rpm, data_rpm)
     ms.cnx.commit()
-    time.sleep(0.142)
+    time.sleep(0.14)
 
 #Update fuel_level_table
 def new_fuel_level(fl):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_fuel_level = ("INSERT INTO fuel_level_table (fuel_level, time_stamp) VALUES (%s, %s)")
-    data_fuel_level = (round(fl.value.magnitude, 2), now)
+    endOfTrip = False
+    add_fuel_level = ("INSERT INTO fuel_level_table (fuel_level, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_fuel_level = (round(fl.value.magnitude, 2), now, endOfTrip)
     ms.cursor.execute(add_fuel_level, data_fuel_level)
     ms.cnx.commit()
-    time.sleep(0.142)
+    time.sleep(0.14)
 
 #Update engine_load_table
 def new_engine_load(e):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_engine_load = ("INSERT INTO engine_load_table (engine_load, time_stamp) VALUES (%s, %s)")
-    data_engine_load = (round(e.value.magnitude, 2), now)
+    endOfTrip = False
+    add_engine_load = ("INSERT INTO engine_load_table (engine_load, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_engine_load = (round(e.value.magnitude, 2), now, endOfTrip)
     ms.cursor.execute(add_engine_load, data_engine_load)
     ms.cnx.commit()
-    time.sleep(0.142)
+    time.sleep(0.14)
 
 #Update speed_table
 def new_speed(s):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_speed = ("INSERT INTO speed_table (speed, time_stamp) VALUES (%s, %s)")
-    data_speed = (s.value.magnitude, now)
+    endOfTrip = False
+    add_speed = ("INSERT INTO speed_table (speed, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_speed = (s.value.magnitude, now, endOfTrip)
     ms.cursor.execute(add_speed, data_speed)
     ms.cnx.commit()
-    time.sleep(0.142)
+    time.sleep(0.14)
 
 #Update air_flow_table
 def new_air_flow(af):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_air_flow = ("INSERT INTO air_flow_table (air_flow, time_stamp) VALUES (%s, %s)")
-    data_air_flow = (round(af.value.magnitude, 2), now)
-    cursor.execute(add_air_flow, data_air_flow)
-    cnx.commit()
-    time.sleep(0.142)
+    endOfTrip = False
+    add_air_flow = ("INSERT INTO air_flow_table (air_flow, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_air_flow = (round(af.value.magnitude, 2), now, endOfTrip)
+    ms.cursor.execute(add_air_flow, data_air_flow)
+    ms.cnx.commit()
+    time.sleep(0.14)
 
 #Update throttle_position_table
 def new_throttle_position(tp):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_throttle_position = ("INSERT INTO throttle_position_table (throttle_position, time_stamp) VALUES (%s, %s)")
-    data_throttle_position = (round(tp.value.magnitude, 2), now)
-    cursor.execute(add_throttle_position, data_throttle_position)
-    cnx.commit()
-    time.sleep(0.142)
+    endOfTrip = False
+    add_throttle_position = ("INSERT INTO throttle_position_table (throttle_position, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_throttle_position = (round(tp.value.magnitude, 2), now, endOfTrip)
+    ms.cursor.execute(add_throttle_position, data_throttle_position)
+    ms.cnx.commit()
+    time.sleep(0.14)
 
 #Update coolant_temp_table
 def new_coolant_temp(ct):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    add_coolant_temp = ("INSERT INTO coolant_temp_table (coolant_temp, time_stamp) VALUES (%s, %s)")
-    data_coolant_temp = (round(((ct.value.magnitude * 1.8) + 32), 2), now) #convert temp from C to F
-    cursor.execute(add_coolant_temp, data_coolant_temp)
-    cnx.commit()
-    time.sleep(0.142)
+    endOfTrip = False
+    add_coolant_temp = ("INSERT INTO coolant_temp_table (coolant_temp, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+    data_coolant_temp = (round(((ct.value.magnitude * 1.8) + 32), 2), now, endOfTrip) #convert temp from C to F
+    ms.cursor.execute(add_coolant_temp, data_coolant_temp)
+    ms.cnx.commit()
+    time.sleep(0.14)
+
+#Update parameter table for end of trip
+def markEndOfTrip(parameterName, tableName):
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    endOfTrip = True
+    add_test = ("INSERT INTO {} ({}, time_stamp, end_of_trip) VALUES (%s, %s, %s)".format(tableName, parameterName))
+    data_test = (0, now, endOfTrip)
+    ms.cursor.execute(add_test, data_test)
+    ms.cnx.commit()
 
 
-#Query rpm data from MySQL database
-def readRPMData(cursor):
-    query = ("SELECT rpm, time_stamp FROM rpm_table")
-    cursor.execute(query)
+#Query parameter data from MySQL database
+def readParameterData(cursor, lastRowNum, analysisType, tableName, hist):
 
-    #Initialize empty lists to store data
-    rpm_data = []
-    time_stamp_data = []
+    #Initialize empty list to store parameter and time_stamp data
+    parameter_data = []
 
-    #Read data into lists
-    for (rpm, time_stamp) in cursor:
-        rpm_data.append(rpm)
-        time_stamp_data.append(time_stamp)
+    #Read data into list either (1) cumulatively or (2) by trip
+    if analysisType == 1:
+        #Select new data in MySQL to be appended to existing trace if it already exists
+        query = ("SELECT * FROM {} LIMIT {},18446744073709551615".format(tableName, lastRowNum-1))
+        ms.cursor.execute(query)
+
+        #Read in new data from MySQL into parameter list
+        for (i, parameter, time_stamp, end_of_trip) in cursor:
+            if end_of_trip == False:
+                parameter_data.append((parameter, time_stamp))
+            elif end_of_trip == True:
+                pass
+
+        #Initialize empty lists to store x-data and y-data
+        x_data = []
+        y_data = []
+
+        #Read parameter data into x_data and y_data lists
+        for i in parameter_data:
+            y_data.append(i[0])
+            x_data.append(i[1])
+
+        #Append null value so graph will plot with gaps
+        y_data.append(None)
+        x_data.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+        #Check if plotting histogram or line plot
+        if hist == True:
+            #Create histogram trace for all data
+            trace = Histogram(x=y_data, histnorm='probability')
+        elif hist == False:        
+            #Create line trace for all data
+            trace = Scatter(x=x_data, y=y_data)
+            
+        data = [trace]
+        return data
+            
+    elif analysisType == 2:  
+        #Select all data in MySQL to be read by trip
+        query = ("SELECT * FROM {}".format(tableName))
+        ms.cursor.execute(query)
+
+        #Read in data from MySQL into parameter list, but divide data by trip using '-'        
+        for (i, parameter, time_stamp, end_of_trip) in cursor:
+            if end_of_trip == False:
+                parameter_data.append(parameter)
+            elif end_of_trip == True:
+                parameter_data.append('-')
+
+        #Initialize empty lists to store y-data
+        y_data = []
+        traces = []
+
+        #Read data in y_data list for each trip
+        for i in parameter_data:
+            if i != '-':
+                y_data.append(i)
+            elif i == '-':                
+                #Create histogram trace for trip
+                t = Histogram(x=y_data, histnorm='probability', opacity=0.75)
+                traces.append(t)
+                data = traces
+
+                #Clear y_data to read in next trip if necessary
+                y_data = []
+
+        return data
         
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=rpm_data)
-    data = Data([trace])
-    return data
-        
-#Plot rpm graph online
-def plotRPMData(data):
-    py.plotly.plot(data, filename = 'RPM vs. Time')
-
-#Query fuel level data from MySQL database
-def readFuelLevelData(cursor):
-    query = ("SELECT fuel_level, time_stamp FROM fuel_level_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    fuel_level_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (fuel_level, time_stamp) in cursor:
-        fuel_level_data.append(fuel_level)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=fuel_level_data)
-    data = Data([trace])
-    return data
-        
-#Plot fuel level graph online
-def plotFuelLevelData(data):
-    py.plotly.plot(data, filename = 'Fuel Level vs. Time')
-
-#Query engine load data from MySQL database
-def readEngineLoadData(cursor):
-    query = ("SELECT engine_load, time_stamp FROM engine_load_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    engine_load_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (engine_load, time_stamp) in cursor:
-        engine_load_data.append(engine_load)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=engine_load_data)
-    data = Data([trace])
-    return data
-        
-#Plot engine load graph online
-def plotEngineLoadData(data):
-    py.plotly.plot(data, filename = 'Engine Load vs. Time')
-
-#Query speed data from MySQL database
-def readSpeedData(cursor):
-    query = ("SELECT speed, time_stamp FROM speed_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    speed_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (speed, time_stamp) in cursor:
-        speed_data.append(speed)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=speed_data)
-    data = Data([trace])
-    return data
-        
-#Plot speed graph online
-def plotSpeedData(data):
-    py.plotly.plot(data, filename = 'Speed vs. Time')
-
-#Query air flow data from MySQL database
-def readAirFlowData(cursor):
-    query = ("SELECT air_flow, time_stamp FROM air_flow_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    air_flow_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (air_flow, time_stamp) in cursor:
-        air_flow_data.append(air_flow)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=air_flow_data)
-    data = Data([trace])
-    return data
-        
-#Plot air flow graph online
-def plotAirFlowData(data):
-    py.plotly.plot(data, filename = 'Air Flow Rate vs. Time')
-
-#Query throttle position data from MySQL database
-def readThrottlePositionData(cursor):
-    query = ("SELECT throttle_position, time_stamp FROM throttle_position_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    throttle_position_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (throttle_position, time_stamp) in cursor:
-        throttle_position_data.append(throttle_position)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=throttle_position_data)
-    data = Data([trace])
-    return data
-        
-#Plot throttle position graph online
-def plotThrottlePositionData(data):
-    py.plotly.plot(data, filename = 'Throttle Position vs. Time')
-
-#Query coolant temperature data from MySQL database
-def readCoolantTempData(cursor):
-    query = ("SELECT coolant_temp, time_stamp FROM coolant_temp_table")
-    cursor.execute(query)
-
-    #Initialize empty lists to store data
-    coolant_temp_data = []
-    time_stamp_data = []
-
-    #Read data into lists
-    for (coolant_temp, time_stamp) in cursor:
-        coolant_temp_data.append(coolant_temp)
-        time_stamp_data.append(time_stamp)
-        
-    #Create a trace from the collected data
-    trace = Scatter(x=time_stamp_data, y=coolant_temp_data)
-    data = Data([trace])
-    return data
-        
-#Plot coolant temperature graph online
-def plotCoolantTempData(data):
-    py.plotly.plot(data, filename = 'Engine Coolant Temperature vs. Time')
-
-
-
+#Plot graph for parameter data (raw data, histogram, or histogram per trip) online
+def plotData(data, parameterName, analysisType):
+    if analysisType == 0:
+        py.plotly.plot(data, filename = '{} vs. Time'.format(parameterName), fileopt='extend')
+                
+    elif analysisType == 2:
+        layout = Layout(barmode='overlay')
+        fig = Figure(data=data, layout=layout)
+        py.plotly.plot(fig, filename = '{} Histogram per Trip'.format(parameterName))
+                
+    elif analysisType == 1:
+        py.plotly.plot(data, filename = '{} Overall Histogram'.format(parameterName), fileopt='extend')
 

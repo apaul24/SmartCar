@@ -28,6 +28,14 @@ smartCar.plotlyLogin(plotlyUser, apiKey)
 ms.cnx = smartCar.mysqlConnect(mysqlUser, mysqlPassword, mysqlDatabase, mysqlHost)
 ms.cursor = ms.cnx.cursor()
 
+#Grab last row number in MySQL to be able to append new raw data to Plotly
+query = ("SELECT id FROM rpm_table ORDER by time_stamp, id")
+i = (1,0) #If table is empty, set row number to 1
+ms.cursor.execute(query)
+for (i) in ms.cursor:
+    pass
+ms.lastRowNum = i[0]
+
 #Auto connect to OBD scanner
 connection = obd.Async()
 
@@ -35,11 +43,20 @@ connection = obd.Async()
 if connection.is_connected():
     print("Car Connected!")
     print("Protocol: {}".format(connection.protocol_name()))
-    print("Now monitoring...\n")
 
-    #Choose parameters to monitor
-    connection.watch(obd.commands.RPM, callback=smartCar.new_rpm)
+    #Read in fuel level while car is idle
     connection.watch(obd.commands.FUEL_LEVEL, callback=smartCar.new_fuel_level)
+    connection.start()
+    print("Reading fuel level...")
+    time.sleep(1)
+    connection.stop()
+    print("Fuel level read successfully!")
+
+    #Unsubscribe from fuel level parameter
+    connection.unwatch(obd.commands.FUEL_LEVEL, callback=smartCar.new_fuel_level)
+
+    #Choose parameters to monitor while driving
+    connection.watch(obd.commands.RPM, callback=smartCar.new_rpm)
     connection.watch(obd.commands.ENGINE_LOAD, callback=smartCar.new_engine_load)
     connection.watch(obd.commands.SPEED, callback=smartCar.new_speed)
     connection.watch(obd.commands.MAF, callback=smartCar.new_air_flow)
@@ -48,28 +65,80 @@ if connection.is_connected():
 
     #Start monitoring
     connection.start()
+    print("Now monitoring. OK to drive.")
 
     #Keep monitoring until user enters CTRL+C
     try:
         while 1:
-            pass
+            pass   
     except KeyboardInterrupt:
+        
+        #Stop monitoring and unsubscribe from parameters 
+        connection.stop()
+        connection.unwatch_all()
+        
+        #Read in fuel level while car is idle
+        connection.watch(obd.commands.FUEL_LEVEL, callback=smartCar.new_fuel_level)
+        connection.start()
+        print("Reading fuel level...")
+        time.sleep(1)
+        connection.stop()
+        print("Fuel level read successfully!")
+        
         #Stop monitoring and close connection to OBD scanner
         print ("Closing connection to OBD scanner...")
-        connection.stop()
         connection.unwatch_all()
         connection.close()
         print ("Connection closed successfully!")
+
+        #Mark end of trip in MySQL table for each parameter
+        time.sleep(1)
+        smartCar.markEndOfTrip("rpm", "rpm_table")
+        smartCar.markEndOfTrip("fuel_level", "fuel_level_table")
+        smartCar.markEndOfTrip("engine_load", "engine_load_table")
+        smartCar.markEndOfTrip("speed", "speed_table")
+        smartCar.markEndOfTrip("air_flow", "air_flow_table")
+        smartCar.markEndOfTrip("throttle_position", "throttle_position_table")
+        smartCar.markEndOfTrip("coolant_temp", "coolant_temp_table")
         
-        #Plot data read from MySQL database and close connection
+        #Plot raw data read from MySQL database and close connection
         print ("Now plotting data...")
-        smartCar.plotRPMData(smartCar.readRPMData(ms.cursor))
-        smartCar.plotFuelLevelData(smartCar.readFuelLevelData(ms.cursor))
-        smartCar.plotEngineLoadData(smartCar.readEngineLoadData(ms.cursor))
-        smartCar.plotSpeedData(smartCar.readSpeedData(ms.cursor))
-        smartCar.plotAirFlowData(smartCar.readAirFlowData(ms.cursor))
-        smartCar.plotThrottlePositionData(smartCar.readThrottlePositionData(ms.cursor))
-        smartCar.plotCoolantTempData(smartCar.readCoolantTempData(ms.cursor))
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "rpm_table", False),
+            "RPM",
+            0)
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "fuel_level_table", False),
+            "Fuel Level",
+            0)
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "engine_load_table", False),
+            "Engine Load",
+            0)
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "speed_table", False),
+            "Speed",
+            0)
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "air_flow_table", False),
+            "Air Flow",
+            0)
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "throttle_position_table", False),
+            "Throttle Position",
+            0)
+        
+        smartCar.plotData(
+            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "coolant_temp_table", False),
+            "Coolant Temperature",
+            0)
+        
         print ("Data plotted online successfully!")
         ms.cursor.close()
         ms.cnx.close()
