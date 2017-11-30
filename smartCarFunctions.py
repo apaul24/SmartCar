@@ -31,73 +31,94 @@ def mysqlConnect(userName, password, database, host='localhost'):
 
 #Update rpm_table
 def new_rpm(r):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_rpm = ("INSERT INTO rpm_table (rpm, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_rpm = (r.value.magnitude, now, endOfTrip)
-    ms.cursor.execute(add_rpm, data_rpm)
-    ms.cnx.commit()
-    time.sleep(0.14)
-
+    if not r.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_rpm = ("INSERT INTO rpm_table (rpm, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_rpm = (r.value.magnitude, now, endOfTrip)
+        ms.cursor.execute(add_rpm, data_rpm)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
+            
 #Update fuel_level_table
 def new_fuel_level(fl):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_fuel_level = ("INSERT INTO fuel_level_table (fuel_level, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_fuel_level = (round(fl.value.magnitude, 2), now, endOfTrip)
-    ms.cursor.execute(add_fuel_level, data_fuel_level)
-    ms.cnx.commit()
-    time.sleep(0.14)
+    if not fl.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_fuel_level = ("INSERT INTO fuel_level_table (fuel_level, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_fuel_level = (round(fl.value.magnitude, 2), now, endOfTrip)
+        ms.cursor.execute(add_fuel_level, data_fuel_level)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
 
 #Update engine_load_table
 def new_engine_load(e):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_engine_load = ("INSERT INTO engine_load_table (engine_load, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_engine_load = (round(e.value.magnitude, 2), now, endOfTrip)
-    ms.cursor.execute(add_engine_load, data_engine_load)
-    ms.cnx.commit()
-    time.sleep(0.14)
+    if not e.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_engine_load = ("INSERT INTO engine_load_table (engine_load, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_engine_load = (round(e.value.magnitude, 2), now, endOfTrip)
+        ms.cursor.execute(add_engine_load, data_engine_load)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
 
 #Update speed_table
 def new_speed(s):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_speed = ("INSERT INTO speed_table (speed, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_speed = (s.value.magnitude, now, endOfTrip)
-    ms.cursor.execute(add_speed, data_speed)
-    ms.cnx.commit()
-    time.sleep(0.14)
+    if not s.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_speed = ("INSERT INTO speed_table (speed, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_speed = (s.value.magnitude, now, endOfTrip)
+        ms.cursor.execute(add_speed, data_speed)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
 
 #Update air_flow_table
 def new_air_flow(af):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_air_flow = ("INSERT INTO air_flow_table (air_flow, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_air_flow = (round(af.value.magnitude, 2), now, endOfTrip)
-    ms.cursor.execute(add_air_flow, data_air_flow)
-    ms.cnx.commit()
-    time.sleep(0.14)
+    if not af.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_air_flow = ("INSERT INTO air_flow_table (air_flow, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_air_flow = (round(af.value.magnitude, 2), now, endOfTrip)
+        ms.cursor.execute(add_air_flow, data_air_flow)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
 
 #Update throttle_position_table
 def new_throttle_position(tp):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_throttle_position = ("INSERT INTO throttle_position_table (throttle_position, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_throttle_position = (round(tp.value.magnitude, 2), now, endOfTrip)
-    ms.cursor.execute(add_throttle_position, data_throttle_position)
-    ms.cnx.commit()
-    time.sleep(0.14)
+    if not tp.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_throttle_position = ("INSERT INTO throttle_position_table (throttle_position, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_throttle_position = (round(tp.value.magnitude, 2), now, endOfTrip)
+        ms.cursor.execute(add_throttle_position, data_throttle_position)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
 
 #Update coolant_temp_table
 def new_coolant_temp(ct):
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    endOfTrip = False
-    add_coolant_temp = ("INSERT INTO coolant_temp_table (coolant_temp, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-    data_coolant_temp = (round(((ct.value.magnitude * 1.8) + 32), 2), now, endOfTrip) #convert temp from C to F
-    ms.cursor.execute(add_coolant_temp, data_coolant_temp)
-    ms.cnx.commit()
-    time.sleep(0.14)
+    if not ct.is_null():
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        endOfTrip = False
+        add_coolant_temp = ("INSERT INTO coolant_temp_table (coolant_temp, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
+        data_coolant_temp = (round(((ct.value.magnitude * 1.8) + 32), 2), now, endOfTrip) #convert temp from C to F
+        ms.cursor.execute(add_coolant_temp, data_coolant_temp)
+        ms.cnx.commit()
+        time.sleep(0.14)
+    else:
+        return
 
 #Update parameter table for end of trip
 def markEndOfTrip(parameterName, tableName):
@@ -107,7 +128,6 @@ def markEndOfTrip(parameterName, tableName):
     data_test = (0, now, endOfTrip)
     ms.cursor.execute(add_test, data_test)
     ms.cnx.commit()
-
 
 #Query parameter data from MySQL database
 def readParameterData(cursor, lastRowNum, analysisType, tableName, hist):
@@ -186,13 +206,13 @@ def readParameterData(cursor, lastRowNum, analysisType, tableName, hist):
 #Plot graph for parameter data (raw data, histogram, or histogram per trip) online
 def plotData(data, parameterName, analysisType):
     if analysisType == 0:
-        py.plotly.plot(data, filename = '{} vs. Time'.format(parameterName), fileopt='extend')
+        py.plotly.plot(data, filename = '{} vs. Time'.format(parameterName), fileopt='extend', auto_open=False)
                 
     elif analysisType == 2:
         layout = Layout(barmode='overlay')
         fig = Figure(data=data, layout=layout)
-        py.plotly.plot(fig, filename = '{} Histogram per Trip'.format(parameterName))
+        py.plotly.plot(fig, filename = '{} Histogram per Trip'.format(parameterName), auto_open=False)
                 
     elif analysisType == 1:
-        py.plotly.plot(data, filename = '{} Overall Histogram'.format(parameterName), fileopt='extend')
+        py.plotly.plot(data, filename = '{} Overall Histogram'.format(parameterName), fileopt='extend', auto_open=False)
 
