@@ -81,32 +81,6 @@ def new_speed(s):
     else:
         return
 
-#Update air_flow_table
-def new_air_flow(af):
-    if not af.is_null():
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        endOfTrip = False
-        add_air_flow = ("INSERT INTO air_flow_table (air_flow, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-        data_air_flow = (round(af.value.magnitude, 2), now, endOfTrip)
-        ms.cursor.execute(add_air_flow, data_air_flow)
-        ms.cnx.commit()
-        time.sleep(0.14)
-    else:
-        return
-
-#Update throttle_position_table
-def new_throttle_position(tp):
-    if not tp.is_null():
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        endOfTrip = False
-        add_throttle_position = ("INSERT INTO throttle_position_table (throttle_position, time_stamp, end_of_trip) VALUES (%s, %s, %s)")
-        data_throttle_position = (round(tp.value.magnitude, 2), now, endOfTrip)
-        ms.cursor.execute(add_throttle_position, data_throttle_position)
-        ms.cnx.commit()
-        time.sleep(0.14)
-    else:
-        return
-
 #Update coolant_temp_table
 def new_coolant_temp(ct):
     if not ct.is_null():

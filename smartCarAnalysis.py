@@ -44,12 +44,6 @@ while True:
             )
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "fuel_level_table", True),
-            "Fuel Level",
-            analysisType
-            )
-        
-        smartCar.plotData(
             smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "engine_load_table", True),
             "Engine Load",
             analysisType
@@ -58,18 +52,6 @@ while True:
         smartCar.plotData(
             smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "speed_table", True),
             "Speed",
-            analysisType
-            )
-        
-        smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "air_flow_table", True),
-            "Air Flow",
-            analysisType
-            )
-        
-        smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "throttle_position_table", True),
-            "Throttle Position",
             analysisType
             )
         
@@ -83,5 +65,3 @@ while True:
         
     elif analysisType == 3:
         break
-    
-#Send analysis summary to user via email

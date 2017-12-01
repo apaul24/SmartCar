@@ -59,8 +59,6 @@ if connection.is_connected():
     connection.watch(obd.commands.RPM, callback=smartCar.new_rpm)
     connection.watch(obd.commands.ENGINE_LOAD, callback=smartCar.new_engine_load)
     connection.watch(obd.commands.SPEED, callback=smartCar.new_speed)
-    connection.watch(obd.commands.MAF, callback=smartCar.new_air_flow)
-    connection.watch(obd.commands.THROTTLE_POS, callback=smartCar.new_throttle_position)
     connection.watch(obd.commands.COOLANT_TEMP, callback=smartCar.new_coolant_temp)
 
     #Start monitoring
@@ -97,8 +95,6 @@ if connection.is_connected():
         smartCar.markEndOfTrip("fuel_level", "fuel_level_table")
         smartCar.markEndOfTrip("engine_load", "engine_load_table")
         smartCar.markEndOfTrip("speed", "speed_table")
-        smartCar.markEndOfTrip("air_flow", "air_flow_table")
-        smartCar.markEndOfTrip("throttle_position", "throttle_position_table")
         smartCar.markEndOfTrip("coolant_temp", "coolant_temp_table")
         
         #Plot raw data read from MySQL database and close connection
@@ -122,16 +118,6 @@ if connection.is_connected():
         smartCar.plotData(
             smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "speed_table", False),
             "Speed",
-            0)
-        
-        smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "air_flow_table", False),
-            "Air Flow",
-            0)
-        
-        smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "throttle_position_table", False),
-            "Throttle Position",
             0)
         
         smartCar.plotData(
