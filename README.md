@@ -11,7 +11,6 @@ logged data and provide the user with graphics displaying the analysis results v
 
 ## System Flowchart
 
-![alt text](https://raw.githubusercontent.com/apaul24/SmartCar/master/SmartCar_SystemFlowchart.png)
 
 
 ## Analysis Flowchart
