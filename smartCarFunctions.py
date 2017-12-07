@@ -104,15 +104,15 @@ def markEndOfTrip(parameterName, tableName):
     ms.cnx.commit()
 
 #Query parameter data from MySQL database
-def readParameterData(cursor, lastRowNum, analysisType, tableName, hist):
+def readParameterData(cursor, analysisType, tableName, hist):
 
     #Initialize empty list to store parameter and time_stamp data
     parameter_data = []
 
     #Read data into list either (1) cumulatively or (2) by trip
     if analysisType == 1:
-        #Select new data in MySQL to be appended to existing trace if it already exists
-        query = ("SELECT * FROM {} LIMIT {},18446744073709551615".format(tableName, lastRowNum-1))
+        #Select new  data in MySQL to be appended to existing trace if it already exists
+        query = ("SELECT * FROM {}".format(tableName))
         ms.cursor.execute(query)
 
         #Read in new data from MySQL into parameter list

@@ -36,27 +36,27 @@ while True:
     if analysisType != 3:
         
         print ("Now plotting data...")
-        
+
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "rpm_table", True),
+            smartCar.readParameterData(ms.cursor, analysisType, "rpm_table", True),
             "RPM",
             analysisType
             )
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "engine_load_table", True),
+            smartCar.readParameterData(ms.cursor, analysisType, "engine_load_table", True),
             "Engine Load",
             analysisType
             )
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "speed_table", True),
+            smartCar.readParameterData(ms.cursor, analysisType, "speed_table", True),
             "Speed",
             analysisType
             )
-        
+
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, analysisType, "coolant_temp_table", True),
+            smartCar.readParameterData(ms.cursor, analysisType, "coolant_temp_table", True),
             "Coolant Temperature",
             analysisType
             )

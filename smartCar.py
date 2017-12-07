@@ -28,14 +28,6 @@ smartCar.plotlyLogin(plotlyUser, apiKey)
 ms.cnx = smartCar.mysqlConnect(mysqlUser, mysqlPassword, mysqlDatabase, mysqlHost)
 ms.cursor = ms.cnx.cursor()
 
-#Grab last row number in MySQL to be able to append new raw data to Plotly
-query = ("SELECT id FROM rpm_table ORDER by time_stamp, id")
-i = (1,0) #If table is empty, set row number to 1
-ms.cursor.execute(query)
-for (i) in ms.cursor:
-    pass
-ms.lastRowNum = i[0]
-
 #Auto connect to OBD scanner
 connection = obd.Async()
 
@@ -101,27 +93,27 @@ if connection.is_connected():
         print ("Now plotting data...")
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "rpm_table", False),
+            smartCar.readParameterData(ms.cursor, 1, "rpm_table", False),
             "RPM",
             0)
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "fuel_level_table", False),
+            smartCar.readParameterData(ms.cursor, 1, "fuel_level_table", False),
             "Fuel Level",
             0)
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "engine_load_table", False),
+            smartCar.readParameterData(ms.cursor, 1, "engine_load_table", False),
             "Engine Load",
             0)
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "speed_table", False),
+            smartCar.readParameterData(ms.cursor, 1, "speed_table", False),
             "Speed",
             0)
         
         smartCar.plotData(
-            smartCar.readParameterData(ms.cursor, ms.lastRowNum, 1, "coolant_temp_table", False),
+            smartCar.readParameterData(ms.cursor, 1, "coolant_temp_table", False),
             "Coolant Temperature",
             0)
         
