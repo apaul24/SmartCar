@@ -6,12 +6,17 @@ logged data and provide the user with graphics displaying the analysis results v
 
 ## System Diagram
 
-![alt text](https://raw.githubusercontent.com/apaul24/SmartCar/master/SmartCar_SystemDiagram.jpg)
+![alt text](https://raw.githubusercontent.com/apaul24/SmartCar/master/SmartCar_SystemDiagram.png)
 
 
 ## System Flowchart
 
-![alt text](https://raw.githubusercontent.com/apaul24/SmartCar/master/SmartCar_SystemFlowchart.jpg)
+![alt text](https://raw.githubusercontent.com/apaul24/SmartCar/master/SmartCar_SystemFlowchart.png)
+
+
+## Analysis Flowchart
+
+![alt text](https://raw.githubusercontent.com/apaul24/SmartCar/master/SmartCar_AnalysisFlowchart.png)
 
 
 
