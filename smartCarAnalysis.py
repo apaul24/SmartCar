@@ -64,4 +64,7 @@ while True:
         print ("Data plotted online successfully!")
         
     elif analysisType == 3:
+	ms.cursor.close()
+	ms.cnx.close()
+	print ("System is OK to shutdown.")
         break
